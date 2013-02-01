@@ -17,59 +17,80 @@ namespace TYPO3\TYPO3CR\Tests\Unit\Domain\Service;
  */
 class NodeTypeManagerTest extends \TYPO3\Flow\Tests\UnitTestCase {
 
-	protected $settingsFixture = array(
-		'contentTypes' => array(
-			'TYPO3.Neos:ContentObject' => array(
-				'label' => 'Abstract content object',
-				'properties' => array(
-					'_hidden' => array(
-						'type' => 'boolean',
-						'label' => 'Hidden',
-						'category' => 'visibility',
-						'priority' => 1
-					),
+	/**
+	 * example node types
+	 *
+	 * @var array
+	 */
+	protected $nodeTypesFixture = array(
+		'TYPO3.Neos:ContentObject' => array(
+			'label' => 'Abstract content object',
+			'properties' => array(
+				'_hidden' => array(
+					'type' => 'boolean',
+					'label' => 'Hidden',
+					'category' => 'visibility',
+					'priority' => 1
 				),
-				'propertyGroups' => array(
-					'visibility' => array(
-						'label' => 'Visibility',
-						'priority' => 1
-					)
+			),
+			'propertyGroups' => array(
+				'visibility' => array(
+					'label' => 'Visibility',
+					'priority' => 1
+				)
+			)
+		),
+		'TYPO3.Neos:Text' => array(
+			'superTypes' => array('TYPO3.Neos:ContentObject'),
+			'label' => 'Text',
+			'properties' => array(
+				'headline' => array(
+					'type' => 'string',
+					'placeholder' => 'Enter headline here'
+				),
+				'text' => array(
+					'type' => 'string',
+					'placeholder' => '<p>Enter text here</p>'
 				)
 			),
-			'TYPO3.Neos:Text' => array(
-				'superTypes' => array('TYPO3.Neos:ContentObject'),
-				'label' => 'Text',
-				'properties' => array(
-					'headline' => array(
-						'type' => 'string',
-						'placeholder' => 'Enter headline here'
-					),
-					'text' => array(
-						'type' => 'string',
-						'placeholder' => '<p>Enter text here</p>'
-					)
-				),
-				'inlineEditableProperties' => array('headline', 'text')
-			),
-			'TYPO3.Neos:TextWithImage' => array(
-				'superTypes' => array('TYPO3.Neos:Text'),
-				'label' => 'Text with image',
-				'properties' => array(
-					'image' => array(
-						'type' => 'TYPO3\Neos\Domain\Model\Media\Image',
-						'label' => 'Image'
-					)
+			'inlineEditableProperties' => array('headline', 'text')
+		),
+		'TYPO3.Neos:TextWithImage' => array(
+			'superTypes' => array('TYPO3.Neos:Text'),
+			'label' => 'Text with image',
+			'properties' => array(
+				'image' => array(
+					'type' => 'TYPO3\Neos\Domain\Model\Media\Image',
+					'label' => 'Image'
 				)
 			)
 		)
 	);
 
 	/**
+	 * A mock configuration manager
+	 *
+	 * @var \TYPO3\Flow\Configuration\ConfigurationManager
+	 */
+	protected $configurationManager;
+
+	public function setUp() {
+		$this->configurationManager = $this->getMockBuilder('TYPO3\Flow\Configuration\ConfigurationManager')
+			->disableOriginalConstructor()
+			->getMock();
+		$this->configurationManager
+			->expects($this->any())
+			->method('getConfiguration')
+			->with('NodeTypes')
+			->will($this->returnValue($this->nodeTypesFixture));
+	}
+
+	/**
 	 * @test
 	 */
 	public function nodeTypeConfigurationIsMergedTogether() {
 		$nodeTypeManager = new \TYPO3\TYPO3CR\Domain\Service\NodeTypeManager();
-		$nodeTypeManager->injectSettings($this->settingsFixture);
+		$this->inject($nodeTypeManager, 'configurationManager', $this->configurationManager);
 
 		$nodeType = $nodeTypeManager->getNodeType('TYPO3.Neos:Text');
 		$this->assertSame('Text', $nodeType->getLabel());
@@ -99,7 +120,7 @@ class NodeTypeManagerTest extends \TYPO3\Flow\Tests\UnitTestCase {
 	 */
 	public function getNodeTypeThrowsExceptionForUnknownNodeType() {
 		$nodeTypeManager = new \TYPO3\TYPO3CR\Domain\Service\NodeTypeManager();
-		$nodeTypeManager->injectSettings($this->settingsFixture);
+		$this->inject($nodeTypeManager, 'configurationManager', $this->configurationManager);
 
 		$nodeTypeManager->getNodeType('TYPO3.Neos:TextFooBarNotHere');
 	}

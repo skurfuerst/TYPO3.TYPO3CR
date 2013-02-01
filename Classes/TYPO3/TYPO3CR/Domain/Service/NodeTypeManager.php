@@ -28,16 +28,10 @@ class NodeTypeManager {
 	protected $cachedNodeTypes = array();
 
 	/**
-	 * @var array
+	 * @Flow\Inject
+	 * @var \TYPO3\Flow\Configuration\ConfigurationManager
 	 */
-	protected $settings;
-
-	/**
-	 * @param array $settings
-	 */
-	public function injectSettings(array $settings) {
-		$this->settings = $settings;
-	}
+	protected $configurationManager;
 
 	/**
 	 * Return all node types which have a certain $superType, without
@@ -124,8 +118,9 @@ class NodeTypeManager {
 	 * @return void
 	 */
 	protected function loadNodeTypes() {
-		foreach (array_keys($this->settings['contentTypes']) as $nodeTypeName) {
-			$this->loadNodeType($nodeTypeName);
+		$completeNodeTypeConfiguration = $this->configurationManager->getConfiguration('NodeTypes');
+		foreach (array_keys($completeNodeTypeConfiguration) as $nodeTypeName) {
+			$this->loadNodeType($nodeTypeName, $completeNodeTypeConfiguration);
 		}
 	}
 
@@ -133,25 +128,26 @@ class NodeTypeManager {
 	 * Load one node type, if it is not loaded yet.
 	 *
 	 * @param string $nodeTypeName
+	 * @param array $completeNodeTypeConfiguration the full node type configuration for all node types
 	 * @return \TYPO3\TYPO3CR\Domain\Model\NodeType
 	 * @throws \TYPO3\TYPO3CR\Exception
 	 */
-	protected function loadNodeType($nodeTypeName) {
+	protected function loadNodeType($nodeTypeName, array $completeNodeTypeConfiguration) {
 		if (isset($this->cachedNodeTypes[$nodeTypeName])) {
 			return $this->cachedNodeTypes[$nodeTypeName];
 		}
 
-		if (!isset($this->settings['contentTypes'][$nodeTypeName])) {
+		if (!isset($completeNodeTypeConfiguration[$nodeTypeName])) {
 			throw new \TYPO3\TYPO3CR\Exception('Node type "' . $nodeTypeName . '" does not exist', 1316451800);
 		}
 
-		$nodeTypeConfiguration = $this->settings['contentTypes'][$nodeTypeName];
+		$nodeTypeConfiguration = $completeNodeTypeConfiguration[$nodeTypeName];
 
 		$mergedConfiguration = array();
 		$superTypes = array();
 		if (isset($nodeTypeConfiguration['superTypes'])) {
 			foreach ($nodeTypeConfiguration['superTypes'] as $superTypeName) {
-				$superType = $this->loadNodeType($superTypeName);
+				$superType = $this->loadNodeType($superTypeName, $completeNodeTypeConfiguration);
 				$superTypes[] = $superType;
 				$mergedConfiguration = \TYPO3\Flow\Utility\Arrays::arrayMergeRecursiveOverrule($mergedConfiguration, $superType->getConfiguration());
 			}
