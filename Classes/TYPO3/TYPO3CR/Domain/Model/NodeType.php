@@ -171,8 +171,8 @@ class NodeType {
 
 		$defaultValues = array();
 		foreach ($this->configuration['properties'] as $propertyName => $propertyConfiguration) {
-			if (isset($propertyConfiguration['default'])) {
-				$defaultValues[$propertyName] = $propertyConfiguration['default'];
+			if (isset($propertyConfiguration['defaultValue'])) {
+				$defaultValues[$propertyName] = $propertyConfiguration['defaultValue'];
 			}
 		}
 
