@@ -299,41 +299,41 @@ interface NodeInterface {
 	public function unsetContentObject();
 
 	/**
-	 * Sets the content type of this node.
+	 * Sets the node type of this node.
 	 *
-	 * @param \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType
+	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType
 	 * @return void
 	 */
-	public function setContentType(\TYPO3\TYPO3CR\Domain\Model\ContentType $contentType);
+	public function setNodeType(NodeType $nodeType);
 
 	/**
-	 * Returns the content type of this node.
+	 * Returns the node type of this node.
 	 *
-	 * @return \TYPO3\TYPO3CR\Domain\Model\ContentType
+	 * @return \TYPO3\TYPO3CR\Domain\Model\NodeType
 	 */
-	public function getContentType();
+	public function getNodeType();
 
 	/**
 	 * Creates, adds and returns a child node of this node. Also sets default
 	 * properties and creates default subnodes.
 	 *
 	 * @param string $name Name of the new node
-	 * @param \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType Content type of the new node (optional)
+	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType Node type of the new node (optional)
 	 * @param string $identifier The identifier of the node, unique within the workspace, optional(!)
 	 * @return \TYPO3\TYPO3CR\Domain\Model\NodeInterface
 	 */
-	public function createNode($name, \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType = NULL, $identifier = NULL);
+	public function createNode($name, NodeType $nodeType = NULL, $identifier = NULL);
 
 	/**
 	 * Creates, adds and returns a child node of this node, without setting default
 	 * properties or creating subnodes. Only used internally.
 	 *
 	 * @param string $name Name of the new node
-	 * @param \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType Content type of the new node (optional)
+	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType Node type of the new node (optional)
 	 * @param string $identifier The identifier of the node, unique within the workspace, optional(!)
 	 * @return \TYPO3\TYPO3CR\Domain\Model\NodeInterface
 	 */
-	public function createSingleNode($name, \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType = NULL, $identifier = NULL);
+	public function createSingleNode($name, NodeType $nodeType = NULL, $identifier = NULL);
 
 	/**
 	 * Returns a node specified by the given relative path.
@@ -346,7 +346,7 @@ interface NodeInterface {
 	 * Returns the primary child node of this node.
 	 *
 	 * Which node acts as a primary child node will in the future depend on the
-	 * content type. For now it is just the first child node.
+	 * node type. For now it is just the first child node.
 	 *
 	 * @return \TYPO3\TYPO3CR\Domain\Model\NodeInterface The primary child node or NULL if no such node exists
 	 */
@@ -354,20 +354,20 @@ interface NodeInterface {
 
 	/**
 	 * Returns all direct child nodes of this node.
-	 * If a content type is specified, only nodes of that type are returned.
+	 * If a node type is specified, only nodes of that type are returned.
 	 *
-	 * @param string $contentTypeFilter If specified, only nodes with that content type are considered
+	 * @param string $nodeTypeFilter If specified, only nodes with that node type are considered
 	 * @return array<\TYPO3\TYPO3CR\Domain\Model\NodeInterface> An array of nodes or an empty array if no child nodes matched
 	 */
-	public function getChildNodes($contentTypeFilter = NULL);
+	public function getChildNodes($nodeTypeFilter = NULL);
 
 	/**
 	 * Checks if this node has any child nodes.
 	 *
-	 * @param string $contentTypeFilter If specified, only nodes with that content type are considered
+	 * @param string $nodeTypeFilter If specified, only nodes with that node type are considered
 	 * @return boolean TRUE if this node has child nodes, otherwise FALSE
 	 */
-	public function hasChildNodes($contentTypeFilter = NULL);
+	public function hasChildNodes($nodeTypeFilter = NULL);
 
 	/**
 	 * Removes this node and all its child nodes.

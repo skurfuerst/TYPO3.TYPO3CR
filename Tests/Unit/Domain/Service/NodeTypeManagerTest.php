@@ -12,10 +12,10 @@ namespace TYPO3\TYPO3CR\Tests\Unit\Domain\Service;
  *                                                                        */
 
 /**
- * Testcase for the "ContenTypeManager"
+ * Testcase for the "NodeTypeManager"
  *
  */
-class ContentTypeManagerTest extends \TYPO3\Flow\Tests\UnitTestCase {
+class NodeTypeManagerTest extends \TYPO3\Flow\Tests\UnitTestCase {
 
 	protected $settingsFixture = array(
 		'contentTypes' => array(
@@ -67,12 +67,12 @@ class ContentTypeManagerTest extends \TYPO3\Flow\Tests\UnitTestCase {
 	/**
 	 * @test
 	 */
-	public function contentTypeConfigurationIsMergedTogether() {
-		$contentTypeManager = new \TYPO3\TYPO3CR\Domain\Service\ContentTypeManager();
-		$contentTypeManager->injectSettings($this->settingsFixture);
+	public function nodeTypeConfigurationIsMergedTogether() {
+		$nodeTypeManager = new \TYPO3\TYPO3CR\Domain\Service\NodeTypeManager();
+		$nodeTypeManager->injectSettings($this->settingsFixture);
 
-		$contentType = $contentTypeManager->getContentType('TYPO3.Neos:Text');
-		$this->assertSame('Text', $contentType->getLabel());
+		$nodeType = $nodeTypeManager->getNodeType('TYPO3.Neos:Text');
+		$this->assertSame('Text', $nodeType->getLabel());
 
 		$expectedProperties = array(
 			'_hidden' => array(
@@ -90,18 +90,18 @@ class ContentTypeManagerTest extends \TYPO3\Flow\Tests\UnitTestCase {
 				'placeholder' => '<p>Enter text here</p>'
 			)
 		);
-		$this->assertSame($expectedProperties, $contentType->getProperties());
+		$this->assertSame($expectedProperties, $nodeType->getProperties());
 	}
 
 	/**
 	 * @test
-	 * @expectedException \TYPO3\TYPO3CR\Exception\ContentTypeNotFoundException
+	 * @expectedException \TYPO3\TYPO3CR\Exception\NodeTypeNotFoundException
 	 */
-	public function getContentTypeThrowsExceptionForUnknownContentType() {
-		$contentTypeManager = new \TYPO3\TYPO3CR\Domain\Service\ContentTypeManager();
-		$contentTypeManager->injectSettings($this->settingsFixture);
+	public function getNodeTypeThrowsExceptionForUnknownNodeType() {
+		$nodeTypeManager = new \TYPO3\TYPO3CR\Domain\Service\NodeTypeManager();
+		$nodeTypeManager->injectSettings($this->settingsFixture);
 
-		$contentTypeManager->getContentType('TYPO3.Neos:TextFooBarNotHere');
+		$nodeTypeManager->getNodeType('TYPO3.Neos:TextFooBarNotHere');
 	}
 }
 ?>

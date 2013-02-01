@@ -14,15 +14,15 @@ namespace TYPO3\TYPO3CR\Migration\Transformations;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
- * Change the content type.
+ * Change the node type.
  */
-class ChangeContentType extends AbstractTransformation {
+class ChangeNodeType extends AbstractTransformation {
 
 	/**
 	 * @Flow\Inject
-	 * @var \TYPO3\TYPO3CR\Domain\Service\ContentTypeManager
+	 * @var \TYPO3\TYPO3CR\Domain\Service\NodeTypeManager
 	 */
-	protected $contentTypeManager;
+	protected $nodeTypeManager;
 
 	/**
 	 * The new ContentType to use as a string
@@ -40,13 +40,13 @@ class ChangeContentType extends AbstractTransformation {
 
 	/**
 	 * If the given node has the property this transformation should work on, this
-	 * returns TRUE if the given ContentType is registered with the ContentTypeManager
+	 * returns TRUE if the given NodeType is registered with the NodeTypeManager
 	 *
 	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeInterface $node
 	 * @return boolean
 	 */
 	public function isTransformable(\TYPO3\TYPO3CR\Domain\Model\NodeInterface $node) {
-		return $this->contentTypeManager->hasContentType($this->newType);
+		return $this->nodeTypeManager->hasNodeType($this->newType);
 	}
 
 	/**
@@ -56,8 +56,8 @@ class ChangeContentType extends AbstractTransformation {
 	 * @return void
 	 */
 	public function execute(\TYPO3\TYPO3CR\Domain\Model\NodeInterface $node) {
-		$contentType = $this->contentTypeManager->getContentType($this->newType);
-		$node->setContentType($contentType);
+		$nodeType = $this->nodeTypeManager->getNodeType($this->newType);
+		$node->setNodeType($nodeType);
 	}
 }
 ?>

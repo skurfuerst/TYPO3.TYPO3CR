@@ -102,11 +102,11 @@ class Node implements NodeInterface {
 	protected $contentObjectProxy;
 
 	/**
-	 * The name of the content type of this node
+	 * The name of the node type of this node
 	 *
 	 * @var string
 	 */
-	protected $contentType = 'unstructured';
+	protected $nodeType = 'unstructured';
 
 	/**
 	 * If this is a removed node. This flag can and is only used in workspaces
@@ -168,9 +168,9 @@ class Node implements NodeInterface {
 
 	/**
 	 * @Flow\Inject
-	 * @var \TYPO3\TYPO3CR\Domain\Service\ContentTypeManager
+	 * @var \TYPO3\TYPO3CR\Domain\Service\NodeTypeManager
 	 */
-	protected $contentTypeManager;
+	protected $nodeTypeManager;
 
 	/**
 	 * @Flow\Inject
@@ -313,7 +313,7 @@ class Node implements NodeInterface {
 	 * @return string
 	 */
 	public function getLabel() {
-		return $this->getContentType()->getNodeLabelGenerator()->getLabel($this);
+		return $this->getNodeType()->getNodeLabelGenerator()->getLabel($this);
 	}
 
 	/**
@@ -687,25 +687,25 @@ class Node implements NodeInterface {
 	}
 
 	/**
-	 * Sets the content type of this node.
+	 * Sets the node type of this node.
 	 *
-	 * @param \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType
+	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType
 	 * @return void
 	 */
-	public function setContentType(\TYPO3\TYPO3CR\Domain\Model\ContentType $contentType) {
-		if ($this->contentType !== $contentType->getName()) {
-			$this->contentType = $contentType->getName();
+	public function setNodeType(\TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType) {
+		if ($this->nodeType !== $nodeType->getName()) {
+			$this->nodeType = $nodeType->getName();
 			$this->nodeRepository->update($this);
 		}
 	}
 
 	/**
-	 * Returns the content type of this node.
+	 * Returns the node type of this node.
 	 *
-	 * @return \TYPO3\TYPO3CR\Domain\Model\ContentType
+	 * @return \TYPO3\TYPO3CR\Domain\Model\NodeType
 	 */
-	public function getContentType() {
-		return $this->contentTypeManager->getContentType($this->contentType);
+	public function getNodeType() {
+		return $this->nodeTypeManager->getNodeType($this->nodeType);
 	}
 
 	/**
@@ -713,20 +713,20 @@ class Node implements NodeInterface {
 	 * properties and creates default subnodes.
 	 *
 	 * @param string $name Name of the new node
-	 * @param \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType Content type of the new node (optional)
+	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType Node type of the new node (optional)
 	 * @param string $identifier The identifier of the node, unique within the workspace, optional(!)
 	 * @return \TYPO3\TYPO3CR\Domain\Model\Node
 	 * @throws \InvalidArgumentException if the node name is not accepted.
 	 * @throws \TYPO3\TYPO3CR\Exception\NodeExistsException if a node with this path already exists.
 	 */
-	public function createNode($name, \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType = NULL, $identifier = NULL) {
-		$newNode = $this->createSingleNode($name, $contentType, $identifier);
-		if ($contentType !== NULL) {
-			foreach ($contentType->getDefaultValuesForProperties() as $propertyName => $propertyValue) {
+	public function createNode($name, \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType = NULL, $identifier = NULL) {
+		$newNode = $this->createSingleNode($name, $nodeType, $identifier);
+		if ($nodeType !== NULL) {
+			foreach ($nodeType->getDefaultValuesForProperties() as $propertyName => $propertyValue) {
 				$newNode->setProperty($propertyName, $propertyValue);
 			}
 
-			foreach ($contentType->getSubstructure() as $subnodeName => $subnodeType) {
+			foreach ($nodeType->getSubstructure() as $subnodeName => $subnodeType) {
 				$newNode->createNode($subnodeName, $subnodeType);
 			}
 		}
@@ -738,13 +738,13 @@ class Node implements NodeInterface {
 	 * properties or creating subnodes. Only used internally.
 	 *
 	 * @param string $name Name of the new node
-	 * @param \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType Content type of the new node (optional)
+	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType Node type of the new node (optional)
 	 * @param string $identifier The identifier of the node, unique within the workspace, optional(!)
 	 * @return \TYPO3\TYPO3CR\Domain\Model\Node
 	 * @throws \InvalidArgumentException if the node name is not accepted.
 	 * @throws \TYPO3\TYPO3CR\Exception\NodeExistsException if a node with this path already exists.
 	 */
-	public function createSingleNode($name, \TYPO3\TYPO3CR\Domain\Model\ContentType $contentType = NULL, $identifier = NULL) {
+	public function createSingleNode($name, \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType = NULL, $identifier = NULL) {
 		if (!is_string($name) || preg_match(self::MATCH_PATTERN_NAME, $name) !== 1) {
 			throw new \InvalidArgumentException('Invalid node name "' . $name . '" (a node name must only contain characters, numbers and the "-" sign).', 1292428697);
 		}
@@ -758,8 +758,8 @@ class Node implements NodeInterface {
 		$this->nodeRepository->add($newNode);
 		$this->nodeRepository->setNewIndex($newNode, NodeRepository::POSITION_LAST);
 
-		if ($contentType !== NULL) {
-			$newNode->setContentType($contentType);
+		if ($nodeType !== NULL) {
+			$newNode->setNodeType($nodeType);
 		}
 
 		return $this->createProxyForContextIfNeeded($newNode, TRUE);
@@ -785,12 +785,12 @@ class Node implements NodeInterface {
 	 * Returns the primary child node of this node.
 	 *
 	 * Which node acts as a primary child node will in the future depend on the
-	 * content type. For now it is just the first child node.
+	 * node type. For now it is just the first child node.
 	 *
 	 * @return \TYPO3\TYPO3CR\Domain\Model\NodeInterface The primary child node or NULL if no such node exists
 	 */
 	public function getPrimaryChildNode() {
-		$node = $this->nodeRepository->findFirstByParentAndContentType($this->path, NULL, $this->getContext()->getWorkspace());
+		$node = $this->nodeRepository->findFirstByParentAndNodeType($this->path, NULL, $this->getContext()->getWorkspace());
 		if ($node === NULL) {
 			return NULL;
 		} else {
@@ -803,23 +803,23 @@ class Node implements NodeInterface {
 	 * Returns all direct child nodes of this node.
 	 * If a content type is specified, only nodes of that type are returned.
 	 *
-	 * @param string $contentTypeFilter If specified, only nodes with that content type are considered
+	 * @param string $nodeTypeFilter If specified, only nodes with that node type are considered
 	 * @return array<\TYPO3\TYPO3CR\Domain\Model\NodeInterface> An array of nodes or an empty array if no child nodes matched
 	 */
-	public function getChildNodes($contentTypeFilter = NULL) {
-		$nodes = $this->nodeRepository->findByParentAndContentType($this->path, $contentTypeFilter, $this->getContext()->getWorkspace());
+	public function getChildNodes($nodeTypeFilter = NULL) {
+		$nodes = $this->nodeRepository->findByParentAndNodeType($this->path, $nodeTypeFilter, $this->getContext()->getWorkspace());
 		return $this->proxyAndFilterNodesForContext($nodes);
 	}
 
 	/**
 	 * Checks if this node has any child nodes.
 	 *
-	 * @param string $contentTypeFilter If specified, only nodes with that content type are considered
+	 * @param string $nodeTypeFilter If specified, only nodes with that node type are considered
 	 * @return boolean TRUE if this node has child nodes, otherwise FALSE
 	 * @todo Needs proper implementation in NodeRepository which only counts nodes (considering workspaces, removed nodes etc.)
 	 */
-	public function hasChildNodes($contentTypeFilter = NULL) {
-		return ($this->getChildNodes($contentTypeFilter) !== array());
+	public function hasChildNodes($nodeTypeFilter = NULL) {
+		return ($this->getChildNodes($nodeTypeFilter) !== array());
 	}
 
 	/**
@@ -1006,6 +1006,7 @@ class Node implements NodeInterface {
 	 * @return boolean
 	 */
 	public function isAccessible() {
+		// TODO: if security context can not be initialized (because too early), we return TRUE.
 		if ($this->hasAccessRestrictions() === FALSE) {
 			return TRUE;
 		}
@@ -1050,7 +1051,7 @@ class Node implements NodeInterface {
 	 * Make the node "similar" to the given source node. That means,
 	 *  - all properties
 	 *  - index
-	 *  - content type
+	 *  - node type
 	 *  - content object
 	 * will be set to the same values as in the source node.
 	 *
@@ -1063,7 +1064,7 @@ class Node implements NodeInterface {
 		}
 
 		$propertyNames = array(
-			'contentType', 'index', 'hidden', 'hiddenAfterDateTime',
+			'nodeType', 'index', 'hidden', 'hiddenAfterDateTime',
 			'hiddenBeforeDateTime', 'hiddenInIndex', 'accessRoles'
 		);
 		foreach ($propertyNames as $propertyName) {
@@ -1181,7 +1182,7 @@ class Node implements NodeInterface {
 	 * @return string
 	 */
 	public function __toString() {
-		return 'Node ' . $this->getContextPath() . '[' . $this->getContentType()->getName() . ']';
+		return 'Node ' . $this->getContextPath() . '[' . $this->getNodeType()->getName() . ']';
 	}
 
 	/**
