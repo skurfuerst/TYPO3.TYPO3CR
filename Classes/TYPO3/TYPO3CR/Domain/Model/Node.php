@@ -726,8 +726,8 @@ class Node implements NodeInterface {
 				$newNode->setProperty($propertyName, $propertyValue);
 			}
 
-			foreach ($nodeType->getSubstructure() as $subnodeName => $subnodeType) {
-				$newNode->createNode($subnodeName, $subnodeType);
+			foreach ($nodeType->getAutoCreatedChildNodes() as $childNodeName => $childNodeType) {
+				$newNode->createNode($childNodeName, $childNodeType);
 			}
 		}
 		return $newNode;

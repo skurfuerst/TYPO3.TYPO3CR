@@ -180,23 +180,23 @@ class NodeType {
 	}
 
 	/**
-	 * Return an array with sub-structure nodes to be created.
+	 * Return an array with child nodes which should be automatically created
 	 *
-	 * @return array the key of this array is the name of the subnode, and the value its NodeType.
+	 * @return array the key of this array is the name of the child, and the value its NodeType.
 	 */
-	public function getSubstructure() {
-		if (!isset($this->configuration['structure'])) {
+	public function getAutoCreatedChildNodes() {
+		if (!isset($this->configuration['childNodes'])) {
 			return array();
 		}
 
-		$substructure = array();
-		foreach ($this->configuration['structure'] as $substructureName => $substructureConfiguration) {
-			if (isset($substructureConfiguration['type'])) {
-				$substructure[$substructureName] = $this->nodeTypeManager->getNodeType($substructureConfiguration['type']);
+		$autoCreatedChildNodes = array();
+		foreach ($this->configuration['childNodes'] as $childNodeName => $childNodeConfiguration) {
+			if (isset($childNodeConfiguration['type'])) {
+				$autoCreatedChildNodes[$childNodeName] = $this->nodeTypeManager->getNodeType($childNodeConfiguration['type']);
 			}
 		}
 
-		return $substructure;
+		return $autoCreatedChildNodes;
 	}
 
 	/**
