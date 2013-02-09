@@ -648,8 +648,8 @@ class NodeRepository extends \TYPO3\Flow\Persistence\Repository {
 		}
 
 		if ($nodeTypeFilter !== NULL) {
-			$includeContentTypeConstraints = array();
-			$excludeContentTypeConstraints = array();
+			$includeNodeTypeConstraints = array();
+			$excludeNodeTypeConstraints = array();
 			$nodeTypeFilterParts = explode(',', $nodeTypeFilter);
 			foreach ($nodeTypeFilterParts as $nodeTypeFilterPart) {
 				$nodeTypeFilterPart = trim($nodeTypeFilterPart);
@@ -663,17 +663,17 @@ class NodeRepository extends \TYPO3\Flow\Persistence\Repository {
 
 				foreach ($nodeTypeFilterPartSubTypes as $nodeTypeFilterPartSubType) {
 					if ($negate === TRUE) {
-						$excludeContentTypeConstraints[] = $query->logicalNot($query->equals('nodeType', $nodeTypeFilterPartSubType));
+						$excludeNodeTypeConstraints[] = $query->logicalNot($query->equals('nodeType', $nodeTypeFilterPartSubType));
 					} else {
-						$includeContentTypeConstraints[] = $query->equals('nodeType', $nodeTypeFilterPartSubType);
+						$includeNodeTypeConstraints[] = $query->equals('nodeType', $nodeTypeFilterPartSubType);
 					}
 				}
 			}
-			if (count($excludeContentTypeConstraints) > 0) {
-				$constraints = array_merge($excludeContentTypeConstraints, $constraints);
+			if (count($excludeNodeTypeConstraints) > 0) {
+				$constraints = array_merge($excludeNodeTypeConstraints, $constraints);
 			}
-			if (count($includeContentTypeConstraints) > 0) {
-				$constraints[] = $query->logicalOr($includeContentTypeConstraints);
+			if (count($includeNodeTypeConstraints) > 0) {
+				$constraints[] = $query->logicalOr($includeNodeTypeConstraints);
 			}
 		}
 
