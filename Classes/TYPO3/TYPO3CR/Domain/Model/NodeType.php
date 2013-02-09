@@ -64,7 +64,7 @@ class NodeType {
 		$this->name = $name;
 
 		foreach ($declaredSuperTypes as $type) {
-			if (!$type instanceof \TYPO3\TYPO3CR\Domain\Model\NodeType) {
+			if (!$type instanceof NodeType) {
 				throw new \InvalidArgumentException('$types must be an array of NodeType objects', 1291300950);
 			}
 		}

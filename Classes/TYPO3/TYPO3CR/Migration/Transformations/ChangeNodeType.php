@@ -25,7 +25,7 @@ class ChangeNodeType extends AbstractTransformation {
 	protected $nodeTypeManager;
 
 	/**
-	 * The new ContentType to use as a string
+	 * The new Node Type to use as a string
 	 *
 	 * @var string
 	 */
@@ -50,7 +50,7 @@ class ChangeNodeType extends AbstractTransformation {
 	}
 
 	/**
-	 * Change the ContentType on the given node.
+	 * Change the Node Type on the given node.
 	 *
 	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeInterface $node
 	 * @return void

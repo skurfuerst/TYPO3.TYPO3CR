@@ -70,10 +70,10 @@ class NodeType implements FilterInterface {
 	 */
 	public function matches(\TYPO3\TYPO3CR\Domain\Model\NodeInterface $node) {
 		if ($this->withSubTypes === TRUE) {
-			return $this->nodeTypeManager->getContentType($node->getContentType())->isOfType($this->nodeTypeName);
+			return $this->nodeTypeManager->getNodeType($node->getNodeType())->isOfType($this->nodeTypeName);
 		} else {
-			$nodeContentType = \TYPO3\Flow\Reflection\ObjectAccess::getProperty($node, 'nodeType', TRUE);
-			return $nodeContentType === $this->nodeTypeName;
+			$nodeType = \TYPO3\Flow\Reflection\ObjectAccess::getProperty($node, 'nodeType', TRUE);
+			return $nodeType === $this->nodeTypeName;
 		}
 	}
 

@@ -320,7 +320,7 @@ class Node implements NodeInterface {
 	 * Returns a short abstract describing / containing summarized content of this node
 	 *
 	 * @return string
-	 * @todo Implement real abstract rendering and use a property specified in the content type
+	 * @todo Implement real abstract rendering and use a property specified in the node type
 	 */
 	public function getAbstract() {
 		$abstractParts = array();
@@ -692,7 +692,7 @@ class Node implements NodeInterface {
 	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType
 	 * @return void
 	 */
-	public function setNodeType(\TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType) {
+	public function setNodeType(NodeType $nodeType) {
 		if ($this->nodeType !== $nodeType->getName()) {
 			$this->nodeType = $nodeType->getName();
 			$this->nodeRepository->update($this);
@@ -719,7 +719,7 @@ class Node implements NodeInterface {
 	 * @throws \InvalidArgumentException if the node name is not accepted.
 	 * @throws \TYPO3\TYPO3CR\Exception\NodeExistsException if a node with this path already exists.
 	 */
-	public function createNode($name, \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType = NULL, $identifier = NULL) {
+	public function createNode($name, NodeType $nodeType = NULL, $identifier = NULL) {
 		$newNode = $this->createSingleNode($name, $nodeType, $identifier);
 		if ($nodeType !== NULL) {
 			foreach ($nodeType->getDefaultValuesForProperties() as $propertyName => $propertyValue) {
@@ -744,7 +744,7 @@ class Node implements NodeInterface {
 	 * @throws \InvalidArgumentException if the node name is not accepted.
 	 * @throws \TYPO3\TYPO3CR\Exception\NodeExistsException if a node with this path already exists.
 	 */
-	public function createSingleNode($name, \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType = NULL, $identifier = NULL) {
+	public function createSingleNode($name, NodeType $nodeType = NULL, $identifier = NULL) {
 		if (!is_string($name) || preg_match(self::MATCH_PATTERN_NAME, $name) !== 1) {
 			throw new \InvalidArgumentException('Invalid node name "' . $name . '" (a node name must only contain characters, numbers and the "-" sign).', 1292428697);
 		}
@@ -801,7 +801,7 @@ class Node implements NodeInterface {
 
 	/**
 	 * Returns all direct child nodes of this node.
-	 * If a content type is specified, only nodes of that type are returned.
+	 * If a node type is specified, only nodes of that type are returned.
 	 *
 	 * @param string $nodeTypeFilter If specified, only nodes with that node type are considered
 	 * @return array<\TYPO3\TYPO3CR\Domain\Model\NodeInterface> An array of nodes or an empty array if no child nodes matched

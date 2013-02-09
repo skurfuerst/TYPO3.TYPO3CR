@@ -444,7 +444,7 @@ class ProxyNode implements NodeInterface {
 	 * @param \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType
 	 * @return void
 	 */
-	public function setNodeType(\TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType) {
+	public function setNodeType(NodeType $nodeType) {
 		if (!isset($this->newNode)) {
 			$this->materializeOriginalNode();
 		}
@@ -469,7 +469,7 @@ class ProxyNode implements NodeInterface {
 	 * @param string $identifier The identifier of the node, unique within the workspace, optional(!)
 	 * @return \TYPO3\TYPO3CR\Domain\Model\NodeInterface
 	 */
-	public function createNode($name, \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType = NULL, $identifier = NULL) {
+	public function createNode($name, NodeType $nodeType = NULL, $identifier = NULL) {
 		return (isset($this->newNode) ? $this->newNode->createNode($name, $nodeType, $identifier) : $this->originalNode->createNode($name, $nodeType, $identifier));
 	}
 
@@ -484,7 +484,7 @@ class ProxyNode implements NodeInterface {
 	 * @throws \InvalidArgumentException if the node name is not accepted.
 	 * @throws \TYPO3\TYPO3CR\Exception\NodeExistsException if a node with this path already exists.
 	 */
-	public function createSingleNode($name, \TYPO3\TYPO3CR\Domain\Model\NodeType $nodeType = NULL, $identifier = NULL) {
+	public function createSingleNode($name, NodeType $nodeType = NULL, $identifier = NULL) {
 		return (isset($this->newNode) ? $this->newNode->createSingleNode($name, $nodeType, $identifier) : $this->originalNode->createSingleNode($name, $nodeType, $identifier));
 	}
 
